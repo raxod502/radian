@@ -681,7 +681,7 @@ nice.)"
              (boundp 'mac-command-modifier))
     (setq mac-option-modifier 'meta)
     (setq mac-command-modifier 'super))
-  (when (radian-enabled-p 'undo-tree)
+  (when (radian-enabled-p undo-tree)
     (bind-key "s-z" #'undo-tree-undo))
   (bind-key "s-x" #'kill-region)
   (bind-key "s-c" #'kill-ring-save)
