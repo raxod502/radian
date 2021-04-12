@@ -61,7 +61,7 @@ your local configuration."
   (append
    (unless radian-color-theme-enable '(zerodark))
    (unless radian-org-enable-contrib '(org-plus-contrib)))
-  "List of packages that radian should not load.
+  "List of packages that Radian should not load.
 
 Radian always loads the packages `use-package', `straight',
 `blackout', `bind-key' and `el-patch' even if they are members of
@@ -74,7 +74,7 @@ this list.")
   "Path to the Radian Git repository.")
 
 (defmacro radian-enabled-p (package)
-  "Return nil if PACKAGE should not be loaded by Radian"
+  "Return nil if PACKAGE should not be loaded by Radian."
   `(not (memq ',package radian-disabled-packages)))
 
 (defmacro radian-protect-macros (&rest body)
@@ -570,7 +570,7 @@ binding the variable dynamically over the entire init-file."
 (defmacro radian-use-package (name &rest args)
   "Like `use-package', but enabled only if the package is not in
 `radian-exclude-packages'. NAME and ARGS are as in `use-package'."
-  (declare (indent defun))
+  (declare (indent 1))
   `(when (radian-enabled-p ,name)
      (use-package ,name
        ,@args)))
