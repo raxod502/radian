@@ -56,16 +56,27 @@ Set this to nil if you wish to load a different color theme in
 your local configuration."
   :type 'boolean)
 
+(make-obsolete-variable 'radian-org-enable-contrib
+                        'radian-disabled-packages
+                        nil)
+(make-obsolete-variable 'radian-color-theme-enable
+                        'radian-disabled-packages
+                        nil)
 
-(defvar radian-disabled-packages
-  (append
-   (unless radian-color-theme-enable '(zerodark))
-   (unless radian-org-enable-contrib '(org-plus-contrib)))
+
+(defvar radian-disabled-packages nil
   "List of packages that Radian should not load.
 
 Radian always loads the packages `use-package', `straight',
 `blackout', `bind-key' and `el-patch' even if they are members of
 this list.")
+
+(unless radian-color-theme-enable
+  (add-to-list 'radian-disabled-packages
+               'zerodark-theme))
+(unless radian-org-enable-contrib
+  (add-to-list 'radian-disabled-packages
+               'org-plus-contrib))
 
 (defvar radian-directory (file-name-directory
                           (directory-file-name
@@ -571,17 +582,27 @@ binding the variable dynamically over the entire init-file."
   "Like `use-package', but enabled only if the package is not in
 `radian-exclude-packages'. NAME and ARGS are as in `use-package'."
   (declare (indent 1))
-  `(when (radian-enabled-p ,name)
-     (use-package ,name
-       ,@args)))
+  `(if (radian-enabled-p ,name)
+       (use-package ,name ,@args)
+     (let* ((melpa-recipe (plist-get ',args ':straight))
+            (non-nil-straight (not (and (plist-member ',args ':straight)
+                                        (null melpa-recipe)))))
+       (when (or (and straight-use-package-by-default
+                      non-nil-straight)
+                 non-nil-straight)
+         (straight-register-package
+          (if melpa-recipe
+              ',name
+            (cons ',name melpa-recipe)))))))
 
 (defmacro use-feature (name &rest args)
-  "Like `use-package', but with `straight-use-package-by-default' disabled.
+  "Like `radian-use-package', but with `straight-use-package-by-default' disabled.
 NAME and ARGS are as in `use-package'."
   (declare (indent defun))
-  `(radian-use-package ,name
-     :straight nil
-     ,@args))
+  `(when (radian-enabled-p ,name)
+     (use-package ,name
+                  :straight nil
+                  ,@args)))
 
 (defun radian--remove-sharp-quotes (form)
   "Remove sharp quotes in all sub-forms of FORM."
@@ -681,8 +702,7 @@ nice.)"
              (boundp 'mac-command-modifier))
     (setq mac-option-modifier 'meta)
     (setq mac-command-modifier 'super))
-  (when (radian-enabled-p undo-tree)
-    (bind-key "s-z" #'undo-tree-undo))
+  (bind-key "s-z" #'undo)
   (bind-key "s-x" #'kill-region)
   (bind-key "s-c" #'kill-ring-save)
   (bind-key "s-v" #'yank)
@@ -5390,9 +5410,8 @@ spaces."
 
 ;; Package `zerodark-theme' provides a good-looking color theme that
 ;; works in both windowed and tty Emacs.
-(straight-register-package
- '(zerodark-theme :host github :repo "NicolasPetton/zerodark-theme"))
 (radian-use-package zerodark-theme
+  :straight (:host github :repo "NicolasPetton/zerodark-theme")
   :no-require t)
 
 ;;; Closing
