@@ -2633,34 +2633,6 @@ order."
 ;; languages. The advantage of `dumb-jump' is that it doesn't try to
 ;; be clever, so it "just works" instantly for dozens of languages
 ;; with zero configuration.
-<<<<<<< HEAD
-(use-package dumb-jump
-||||||| constructed merge base
-(use-package dumb-jump
-  :init/el-patch
-
-  (defvar dumb-jump-mode-map
-    (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "C-M-g") 'dumb-jump-go)
-      (define-key map (kbd "C-M-p") 'dumb-jump-back)
-      (define-key map (kbd "C-M-q") 'dumb-jump-quick-look)
-      map))
-
-  (define-minor-mode dumb-jump-mode
-    "Minor mode for jumping to variable and function definitions"
-    :global t
-    :keymap dumb-jump-mode-map)
-
-  :init
-
-  (dumb-jump-mode +1)
-
-  :bind (:map dumb-jump-mode-map
-              ("M-Q" . #'dumb-jump-quick-look))
-  :bind* (("C-M-d" . #'dumb-jump-go-prompt)
-          ("C-x 4 g" . #'dumb-jump-go-other-window)
-          ("C-x 4 d" . #'radian-dumb-jump-go-prompt-other-window))
-=======
 (radian-use-package dumb-jump
   :init/el-patch
 
@@ -2685,7 +2657,6 @@ order."
   :bind* (("C-M-d" . #'dumb-jump-go-prompt)
           ("C-x 4 g" . #'dumb-jump-go-other-window)
           ("C-x 4 d" . #'radian-dumb-jump-go-prompt-other-window))
->>>>>>> New option: radian-disabled-packages
   :config
 
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate 100))
@@ -3405,75 +3376,11 @@ Return either a string or nil."
   :config
 
   ;; Remove annoying messages when opening *.tex files.
-<<<<<<< HEAD
   (radian-defadvice radian--tex-update-style-silently (func &rest args)
     :around #'TeX-update-style
     "Silence silly messages from `TeX-update-style'."
     (radian--with-silent-message "Applying style hooks"
       (apply func args)))
-||||||| constructed merge base
-  (defun TeX-update-style (&optional force)
-    (el-patch-concat
-      "Run style specific hooks"
-      (el-patch-add
-        ", silently,")
-      " for the current document.
-
-Only do this if it has not been done before, or if optional argument
-FORCE is not nil.")
-    (unless (or (and (boundp 'TeX-auto-update)
-                     (eq TeX-auto-update 'BibTeX)) ; Not a real TeX buffer
-                (and (not force)
-                     TeX-style-hook-applied-p))
-      (setq TeX-style-hook-applied-p t)
-      (el-patch-remove
-        (message "Applying style hooks..."))
-      (TeX-run-style-hooks (TeX-strip-extension nil nil t))
-      ;; Run parent style hooks if it has a single parent that isn't itself.
-      (if (or (not (memq TeX-master '(nil t)))
-              (and (buffer-file-name)
-                   (string-match TeX-one-master
-                                 (file-name-nondirectory (buffer-file-name)))))
-          (TeX-run-style-hooks (TeX-master-file)))
-      (if (and TeX-parse-self
-               (null (cdr-safe (assoc (TeX-strip-extension nil nil t)
-                                      TeX-style-hook-list))))
-          (TeX-auto-apply))
-      (run-hooks 'TeX-update-style-hook)
-      (el-patch-remove
-        (message "Applying style hooks...done"))))
-=======
-  (defun TeX-update-style (&optional force)
-    (el-patch-concat
-      "Run style specific hooks"
-      (el-patch-add
-        ", silently,")
-      " for the current document.
-
-Only do this if it has not been done before, or if optional argument
-FORCE is not nil.")
-    (unless (or (eq major-mode 'bibtex-mode)  ; Not a real TeX buffer
-                (and (not force)
-                     TeX-style-hook-applied-p))
-      (setq TeX-style-hook-applied-p t)
-      (el-patch-remove
-        (message "Applying style hooks..."))
-      (TeX-run-style-hooks (TeX-strip-extension nil nil t))
-      ;; Run parent style hooks if it has a single parent that isn't itself.
-      (if (or (not (memq TeX-master '(nil t)))
-              (and (buffer-file-name)
-                   (string-match TeX-one-master
-                                 (file-name-nondirectory (buffer-file-name)))))
-          (TeX-run-style-hooks (TeX-master-file)))
-      (if (and TeX-parse-self
-               (null (cdr-safe (assoc (TeX-strip-extension nil nil t)
-                                      TeX-style-hook-list))))
-          (TeX-auto-apply))
-      (run-hooks 'TeX-update-style-hook)
-      (el-patch-remove
-        (message "Applying style hooks...done"))))
->>>>>>> New option: radian-disabled-packages
-
   :config
 
   ;; The following configuration is recommended in the manual at
@@ -5129,15 +5036,8 @@ spam. This advice, however, inhibits the message for everyone.")
 
 ;; Package `restart-emacs' provides an easy way to restart Emacs from
 ;; inside of Emacs, both in the terminal and in windowed mode.
-<<<<<<< HEAD
-(use-package restart-emacs
-||||||| constructed merge base
-(use-package restart-emacs
-  :commands (radian-new-emacs)
-=======
 (radian-use-package restart-emacs
   :commands (radian-new-emacs)
->>>>>>> New option: radian-disabled-packages
   :init
   (defvar radian--restart-in-progress nil
     "Used to prevent infinite recursion.
